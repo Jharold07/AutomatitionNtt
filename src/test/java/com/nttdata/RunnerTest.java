@@ -8,7 +8,9 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features = "src/test/resources/features",
         glue = "com.nttdata",
-        tags = "@RegistrarUsuario")
+        tags = "@Demoblaze",
+        plugin = {"pretty"}
+)
 
 public class RunnerTest {
 }

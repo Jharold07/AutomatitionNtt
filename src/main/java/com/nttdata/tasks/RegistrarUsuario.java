@@ -1,33 +1,54 @@
 package com.nttdata.tasks;
 
-import com.nttdata.pages.RegisterPage;
-import lombok.AllArgsConstructor;
-import net.serenitybdd.screenplay.Actor;
-import net.serenitybdd.screenplay.Performable;
+import com.nttdata.pages.HomePage;
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Task;
+import net.serenitybdd.screenplay.Tasks;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
+import net.serenitybdd.screenplay.actions.Scroll;
+import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
+import net.serenitybdd.screenplay.waits.WaitUntil;
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-@AllArgsConstructor
+import java.time.Duration;
+
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
+
 public class RegistrarUsuario implements Task {
 
-    private final String nombre;
-    private final String apellido;
-    private final String email;
-    private final String contrasenia;
+    private final String user;
+    private final String pass;
 
-    @Override
-    public <T extends Actor> void performAs(T actor) {
-        actor.attemptsTo(
-                Enter.theValue(nombre).into(RegisterPage.INP_FIRST_NAME),
-                Enter.theValue(apellido).into(RegisterPage.INP_LAST_NAME),
-                Enter.theValue(email).into(RegisterPage.INP_EMAIL),
-                Enter.theValue(contrasenia).into(RegisterPage.INP_CONTRASENIA),
-                Click.on(RegisterPage.BTN_CREAR_USUARIO)
-        );
+    public RegistrarUsuario(String user, String pass){
+        this.user = user;
+        this.pass = pass;
     }
 
-    public static Performable withData(String nombre, String apellido, String email, String contrasenia){
-        return new RegistrarUsuario(nombre, apellido, email, contrasenia);
+    public static RegistrarUsuario with(String user, String pass){
+        return Tasks.instrumented(RegistrarUsuario.class, user, pass);
+    }
+
+    @Override
+    public <T extends net.serenitybdd.screenplay.Actor> void performAs(T actor) {
+
+        actor.attemptsTo(
+                Scroll.to(HomePage.LNK_SIGN_UP),
+                Click.on(HomePage.LNK_SIGN_UP),
+                WaitUntil.the(HomePage.MODAL_SIGN_UP, isVisible()).forNoMoreThan(10).seconds(),
+
+                Enter.theValue(user).into(HomePage.INP_SIGNUP_USER),
+                Enter.theValue(pass).into(HomePage.INP_SIGNUP_PASS),
+                Click.on(HomePage.BTN_SIGNUP)
+        );
+
+        WebDriver driver = BrowseTheWeb.as(actor).getDriver();
+        Alert alert = new WebDriverWait(driver, Duration.ofSeconds(10))
+                .until(ExpectedConditions.alertIsPresent());
+        Serenity.setSessionVariable("alertText").to(alert.getText());
+        alert.accept();
     }
 }

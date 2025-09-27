@@ -6,9 +6,7 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Open;
 
 public class NavegarA {
-
-    public static Performable theHomePage(){
-        return Task.where("navega a la pagina de inicio",
-                Open.browserOn().the(HomePage.class));
+    public static Performable demoblaze() {
+        return Task.where("{0} abre Demoblaze", Open.browserOn().the(HomePage.class));
     }
 }

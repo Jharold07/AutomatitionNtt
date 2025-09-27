@@ -1,23 +1,13 @@
 package com.nttdata.questions;
 
-import lombok.AllArgsConstructor;
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
-import net.serenitybdd.screenplay.questions.Text;
-import net.serenitybdd.screenplay.targets.Target;
 
-
-@AllArgsConstructor
 public class RegisterQuestion implements Question<String> {
-
-    private final Target item;
-
-    public static RegisterQuestion visibleEn(Target item){
-        return new RegisterQuestion((item));
-    }
-
+    public static RegisterQuestion alertText(){ return new RegisterQuestion(); }
     @Override
-    public String answeredBy(Actor actor){
-        return Text.of(item).answeredBy(actor);
+    public String answeredBy(Actor actor) {
+        return Serenity.sessionVariableCalled("alertText"); // guardado por la Task
     }
 }
